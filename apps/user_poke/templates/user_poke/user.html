@@ -35,11 +35,7 @@
                <th><a href="{% url 'user_page' user_id=user.id%}">{{user.name}}</a></th>
       				 <th>{{user.alias}}</th>
                <th>{{user.email}}</th>
-               {% for x in other_count %}
-                 {% if other_count[x].id == user.id %}
-                    <th>{{other_count.count}}</th>
-                 {% endif %}
-               {% endfor %}
+               <th>?</th>
                <th><a href="{% url 'poke' user_id=user.id%}">Poke!</a></th>
              </tr>
              {% endif %}

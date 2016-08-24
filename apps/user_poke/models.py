@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 import bcrypt, re
+from datetime import datetime
+
 
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
@@ -10,9 +12,11 @@ PASS_REGEX = re.compile(r'\d.*[A-Z]|[A-Z].*\d')
 class UserManager(models.Manager):
     def validateReg(self, request):
         errors = []
+
+
         if len(request.POST['name']) < 2:
             errors.append('Name can not be less than 2 characters')
-        elif not request.POST['name'].isalpha() and request.POST['name'].isspace():
+        elif not all(x.isalpha() or x.isspace() for x in request.POST['name']):
             errors.append('Name should only contain letters')
         if len(request.POST['email']) < 1:
             errors.append('Email can not be empty')
@@ -30,7 +34,7 @@ class UserManager(models.Manager):
             pass
         if len(errors) > 0:
             return (False, errors)
-        return (True, "none")
+        return (True, errors)
 
     def validateRegPass(self, request):
         errors = []

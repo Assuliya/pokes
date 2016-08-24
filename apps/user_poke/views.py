@@ -17,18 +17,20 @@ def user_page(request, user_id):
         total += 1
     other = User.objects.all()
 
-    other_count = []
-    for x in other:
-        z = Poke.objects.filter(user_id_to = x.id).values('user_id').annotate(count=Count('user_id')).order_by('-count')
-        other_total = 0
-        for y in z:
-            other_total += 1
-            pack = {}
-            pack.update({'id':x.id})
-            pack.update({'count':other_total})
-            other_count.append(pack)
+    # other_count = []
+    # for x in other:
+    #     z = Poke.objects.filter(user_id_to = x.id).values('user_id').annotate(count=Count('user_id')).order_by('-count')
+    #     other_total = 0
+    #     for y in z:
+    #         other_total += 1
+    #     pack = {}
+    #     pack.update({'id':x.id})
+    #     pack.update({'count':other_total})
+    #     other_count.append(pack)
+    # print other_count
 
-    print other_count[0]['count']
+    other_count = Poke.objects.raw('SELECT "user_poke_poke"."id","user_poke_poke"."user_id_to_id","user_poke_poke"."user_id_id", COUNT("user_poke_poke"."user_id_id") AS "count" FROM "user_poke_poke" GROUP BY "user_poke_poke"."user_id_id" ORDER BY "count" DESC')
+
 
     context = {'user':user, 'total': total, 'pokes': pokes, 'other': other, 'other_count': other_count}
     return render(request, 'user_poke/user.html', context)
@@ -36,8 +38,11 @@ def user_page(request, user_id):
 def register_process(request):
     result = User.manager.validateReg(request)
     resultPass = User.manager.validateRegPass(request)
+    print result
+    print resultPass
     if result[0] == False or resultPass[0] == False:
         errors = result[1]+resultPass[1]
+        print errors
         print_messages(request, errors)
         return redirect(reverse('index'))
     pw_hash = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt())
