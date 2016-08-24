@@ -5,7 +5,40 @@
     <title>Poke</title>
 </head>
 <body>
-  <h1>Hello</h1>
-
+  <h2>Welcome!</h1>
+  {% if messages %}
+      <div class="errors">
+        {% for message in messages %}
+          <h4{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+        {% endfor %}
+      </div>
+  {% endif %}
+  {% if request.session.user%}
+      <h2>User {{request.session.user}}! You're successfully logged in!</h2>
+      <a href="{% url 'user_page' user_id=request.session.user %}">My Page</a>
+      <a href="{% url 'logout'%}">Logout</a>
+  {% endif %}
+  {% if not request.session.user%}
+     <h3>Register</h3>
+     <form action="{% url 'register_process' %}" method='post'>
+       {% csrf_token %}
+       Name: <input type="text" name="name">
+       Alias: <input type="text" name="alias">
+       Email: <input type="email" name="email">
+       Date of birth: <input type="date" name="birth" min="1910-01-01">
+       Password: <input type="password" name="password">
+       Confirm PW: <input type="password" name="repeat">
+       <input type="submit" value="Register">
+       <br>
+       *password should be at least 8 characters and contain upper case letters and numbers
+     </form>
+     <h3>Login</h3>
+     <form action="{% url 'login_process' %}" method='post'>
+        {% csrf_token %}
+        Email <input type="email" name="email">
+        Password <input type="password" name="password">
+        <input type="submit" value="Login">
+     </form>
+  {% endif %}
 </body>
 </html>

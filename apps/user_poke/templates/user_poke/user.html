@@ -5,7 +5,48 @@
     <title>Poke</title>
 </head>
 <body>
-  <h1>User</h1>
-
+   <h2>Welcome {{user.alias}}</h2>
+   <h3>{{total}} people poked you!</h3>
+   <ul>
+     {% for poke in pokes %}
+      {%  for user in other %}
+        {% if user.id == poke.user_id %}
+          <li>{{user.alias}} poked you {{poke.count}} times</li>
+        {% endif %}
+       {% endfor %}
+     {% endfor %}
+   </ul>
+   <h3>People you may want to poke:</h3>
+   <table>
+      <thead>
+         <tr>
+           <th>Name</th>
+           <th>Alias</th>
+           <th>Email</th>
+           <th>Poke History</th>
+           <th>Action</th>
+         </tr>
+      </thead>
+      <tbody>
+        <tbody>
+          {%  for user in other %}
+            {% if user.id != request.session.user %}
+             <tr>
+               <th><a href="{% url 'user_page' user_id=user.id%}">{{user.name}}</a></th>
+      				 <th>{{user.alias}}</th>
+               <th>{{user.email}}</th>
+               {% for x in other_count %}
+                 {% if other_count[x].id == user.id %}
+                    <th>{{other_count.count}}</th>
+                 {% endif %}
+               {% endfor %}
+               <th><a href="{% url 'poke' user_id=user.id%}">Poke!</a></th>
+             </tr>
+             {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    <br><br>
+    <a href="{% url 'logout' %}">Logout</a>
 </body>
 </html>
