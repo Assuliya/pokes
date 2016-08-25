@@ -18,6 +18,8 @@ class UserManager(models.Manager):
             errors.append('Email can not be empty')
         elif not EMAIL_REGEX.match(request.POST['email']):
             errors.append('Email is not valid')
+        if len(request.POST['birth']) == 0:
+            errors.append('Date of birth can not be empty')
         try:
             user = User.objects.get(email = request.POST['email'])
             errors.append('This email is already being used')

@@ -5,9 +5,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from models import User, Poke
 import bcrypt
+from datetime import date
 
 def index(request):
-    return render(request, 'user_poke/index.html')
+    today = date.today()
+    format_time = today.strftime('%Y-%m-%d')
+    context = {'time':format_time}
+    return render(request, 'user_poke/index.html', context)
 
 def user_page(request, user_id):
     user = User.objects.get(id = user_id)
@@ -18,7 +22,7 @@ def user_page(request, user_id):
     other = User.objects.all()
     other_count = []
     for x in other:
-        z = Poke.objects.filter(user_id_to = x.id).values('user_id').annotate(count=Count('user_id')).order_by('-count')
+        z = Poke.objects.filter(user_id_to = x.id)
         other_total = 0
         for y in z:
             other_total += 1
@@ -32,11 +36,8 @@ def user_page(request, user_id):
 def register_process(request):
     result = User.manager.validateReg(request)
     resultPass = User.manager.validateRegPass(request)
-    print result
-    print resultPass
     if result[0] == False or resultPass[0] == False:
         errors = result[1]+resultPass[1]
-        print errors
         print_messages(request, errors)
         return redirect(reverse('index'))
     pw_hash = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt())
