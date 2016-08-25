@@ -5,17 +5,33 @@
     <title>Poke</title>
 </head>
 <body>
-   <h2>Welcome {{user.alias}}</h2>
-   <h3>{{total}} people poked you!</h3>
-   <ul>
-     {% for poke in pokes %}
-      {%  for user in other %}
-        {% if user.id == poke.user_id %}
-          <li>{{user.alias}} poked you {{poke.count}} times</li>
-        {% endif %}
-       {% endfor %}
-     {% endfor %}
-   </ul>
+   {% if request.session.user == user.id%}
+      <h2>Welcome {{user.alias}}</h2>
+      <h3>{{total}} people poked you!</h3>
+      <ul>
+        {% for poke in pokes %}
+         {%  for user in other %}
+           {% if user.id == poke.user_id %}
+             <li>{{user.alias}} poked you {{poke.count}} times</li>
+           {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </ul>
+   {% else%}
+      <h2>{{user.alias}}'s page</h2>
+      <a href="{% url 'user_page' user_id=request.session.user%}">Return</a>
+      <h3>{{total}} people poked {{user.alias}}!</h3>
+      <ul>
+        {% for poke in pokes %}
+         {%  for user in other %}
+           {% if user.id == poke.user_id %}
+             <li>{{user.alias}} poked {{poke.count}} times</li>
+           {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </ul>
+   {% endif %}
+   {% if request.session.user == user.id%}
    <h3>People you may want to poke:</h3>
    <table>
       <thead>
@@ -35,7 +51,11 @@
                <th><a href="{% url 'user_page' user_id=user.id%}">{{user.name}}</a></th>
       				 <th>{{user.alias}}</th>
                <th>{{user.email}}</th>
-               <th>?</th>
+               {% for x in other_count %}
+                  {% if user.id == x.id %}
+                    <th>{{ x.count }}</th>
+                  {% endif %}
+               {% endfor %}
                <th><a href="{% url 'poke' user_id=user.id%}">Poke!</a></th>
              </tr>
              {% endif %}
@@ -43,6 +63,7 @@
         </tbody>
       </table>
     <br><br>
+    {% endif %}
     <a href="{% url 'logout' %}">Logout</a>
 </body>
 </html>

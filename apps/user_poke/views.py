@@ -16,22 +16,16 @@ def user_page(request, user_id):
     for x in pokes:
         total += 1
     other = User.objects.all()
-
-    # other_count = []
-    # for x in other:
-    #     z = Poke.objects.filter(user_id_to = x.id).values('user_id').annotate(count=Count('user_id')).order_by('-count')
-    #     other_total = 0
-    #     for y in z:
-    #         other_total += 1
-    #     pack = {}
-    #     pack.update({'id':x.id})
-    #     pack.update({'count':other_total})
-    #     other_count.append(pack)
-    # print other_count
-
-    other_count = Poke.objects.raw('SELECT "user_poke_poke"."id","user_poke_poke"."user_id_to_id","user_poke_poke"."user_id_id", COUNT("user_poke_poke"."user_id_id") AS "count" FROM "user_poke_poke" GROUP BY "user_poke_poke"."user_id_id" ORDER BY "count" DESC')
-
-
+    other_count = []
+    for x in other:
+        z = Poke.objects.filter(user_id_to = x.id).values('user_id').annotate(count=Count('user_id')).order_by('-count')
+        other_total = 0
+        for y in z:
+            other_total += 1
+        pack = {}
+        pack.update({'count':other_total})
+        pack.update({'id':x.id})
+        other_count.append(pack)
     context = {'user':user, 'total': total, 'pokes': pokes, 'other': other, 'other_count': other_count}
     return render(request, 'user_poke/user.html', context)
 
